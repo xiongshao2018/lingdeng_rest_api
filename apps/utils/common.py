@@ -4,7 +4,7 @@
 import os, yaml, logging, nmap
 from django.conf import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rest_xops.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lingdeng_rest_api.settings')
 error_logger = logging.getLogger('error')
 
 class ConfigFileMixin:

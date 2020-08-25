@@ -1,9 +1,9 @@
 from django.urls import path,include
-from rbac.views import user,organization,menu,role,permission
+from users.views import user,organization,menu,role,permission
 from cmdb.views import dict
 from rest_framework import routers
-
-router = routers.SimpleRouter()
+app_name = 'users'
+router = routers.DefaultRouter()
 router.register(r'users', user.UserViewSet, basename="users")
 router.register(r'organizations', organization.OrganizationViewSet, basename="organization")
 router.register(r'menus', menu.MenuViewSet, basename="menus")
@@ -11,11 +11,12 @@ router.register(r'permissions', permission.PermissionViewSet, basename="permissi
 router.register(r'roles', role.RoleViewSet, basename="roles")
 router.register(r'dicts', dict.DictViewSet, basename="dicts")
 router.register(r'login', user.UserAuthView, basename="login")
+router.register(r'info', user.UserInfoView, basename="user_info")
 
 urlpatterns = [
     path(r'api/', include(router.urls)),
     path(r'auth/login/', user.UserAuthView.as_view({'post':'create'})),
-    path(r'auth/info/', user.UserInfoView.as_view(), name='user_info'),
+    # path(r'auth/info/', user.UserInfoView.as_view(), name='user_info'),
     path(r'auth/build/menus/', user.UserBuildMenuView.as_view(), name='build_menus'),
     path(r'api/organization/tree/', organization.OrganizationTreeView.as_view(),name='organizations_tree'),
     path(r'api/organization/user/tree/', organization.OrganizationUserTreeView.as_view(), name='organization_user_tree'),

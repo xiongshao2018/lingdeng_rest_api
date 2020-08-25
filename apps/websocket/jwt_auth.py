@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.conf import LazySettings
 from jwt import InvalidSignatureError, ExpiredSignatureError, DecodeError
 from urllib import parse
-from rbac.models import UserProfile
+from users.models import UserProfile
 from django.db import close_old_connections
 
 warn_logger = logging.getLogger('warn')

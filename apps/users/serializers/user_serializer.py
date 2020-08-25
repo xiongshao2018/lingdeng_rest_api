@@ -3,7 +3,7 @@
 from django.contrib.auth import authenticate
 from django.db.models import Q
 from rest_framework import serializers
-from ..models import UserProfile
+from ..models import UserProfile, Role, Permission
 import re
 
 class UserLoginSerializer(serializers.Serializer):
@@ -90,10 +90,35 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("手机号已经被注册")
         return mobile
 
-class UserInfoListSerializer(serializers.ModelSerializer):
+class permissionsSerializer(serializers.ModelSerializer):
     '''
     公共users
     '''
     class Meta:
+        model = Permission
+        fields = ("method",)
+
+class RoleSerializer(serializers.ModelSerializer):
+    '''
+    公共users
+    '''
+    permissions  = permissionsSerializer(many=True)
+    def validate_permissions(self, permissions):
+        print(permissions)
+        return permissions
+    class Meta:
+        model = Role
+        fields = ("permissions",)
+
+class UserInfoListSerializer(serializers.ModelSerializer):
+    '''
+    公共users
+    '''
+    roles = RoleSerializer(many=True)
+
+    def validate_roles(self, roles):
+        print(roles)
+        return roles
+    class Meta:
         model = UserProfile
-        fields = ('id','name','mobile','email','position')
+        fields = ('id','name','mobile','image','email','roles')

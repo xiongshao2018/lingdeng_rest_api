@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class RbacConfig(AppConfig):
-    name = 'rbac'
+    name = 'users'
 
     def ready(self):
         from .signals import create_user

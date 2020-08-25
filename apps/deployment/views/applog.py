@@ -1,8 +1,8 @@
 # @Time    : 2019/4/1 13:50
 # @Author  : xufqing
 from rest_framework.views import APIView
-from rest_xops.basic import XopsResponse
-from rest_xops.code import *
+from lingdeng_rest_api.basic import XopsResponse
+from lingdeng_rest_api.code import *
 from common.custom import RbacPermission
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from utils.shell_excu import connect_init

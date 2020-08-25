@@ -8,7 +8,7 @@ from utils.websocket_tail import Tailf
 from django.conf import settings
 import os, time, logging
 from celery import Task
-from rest_xops.celery import app
+from lingdeng_rest_api.celery import app
 from common.custom import RedisObj
 
 error_logger = logging.getLogger('error')

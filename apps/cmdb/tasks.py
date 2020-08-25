@@ -4,7 +4,7 @@ import time, logging
 from utils.common import ScanSettingsLoad
 from utils.shell_excu import Shell
 from .models import DeviceScanInfo
-from rest_xops.celery import app
+from lingdeng_rest_api.celery import app
 info_logger = logging.getLogger('info')
 
 @app.task

@@ -1,75 +1,3 @@
-**因个人原因，目前开发暂停，坑挖了目前没时间填，，实在意料之外，目前已完成的功能大部分都是完整，项目建议仅作交流学习。**
-
-demo地址: http://demo.xufqing.cn
-
-每两小时还原数据
-
-管理员账号:admin 密码admin@1234
-
-![1.png](https://raw.githubusercontent.com/xufqing/rest_xops/master/demo/1.png)
-
-![2.png](https://raw.githubusercontent.com/xufqing/rest_xops/master/demo/2.png)
-
-![3.png](https://raw.githubusercontent.com/xufqing/rest_xops/master/demo/3.png)
-
-![4.png](https://raw.githubusercontent.com/xufqing/rest_xops/master/demo/4.png)
-
-**持续构建样例**
-
-![11.png](https://raw.githubusercontent.com/xufqing/rest_xops/master/demo/11.png)
-![22.png](https://raw.githubusercontent.com/xufqing/rest_xops/master/demo/22.png)
-
-***特色功能开发进度***
-
-- 已完成
-- [X] 基于RBAC的用户权限管理
-- [X] 资产扫描功能（目前只能扫描linux服务器）
-- [X] 持续构建（websocket实时显示过程）
-- [X] 项目应用控制（启动停止）
-- [X] 应用日志的实时查看（websocket）
-- [X] 对象级权限控制（密码管理功能，只能查看编辑自己的密码）
-- [X] 应用日志下载
-- 待开发
-- [ ] 工单系统
-- [ ] 作业平台（ansible api）
-- [ ] 文件管理
-- [ ] WEBSSH（堡垒机）
-- [ ] SQL作业平台
-- ...........
-
-***本项目采用以下技术***
-
-前端：
-
-vue 2.5.17
-
-elementUI 2.6.0
-
-websocket
-
-后端：
-
-django 2.1.7
-
-django rest framework 3.9.1
-
-django rest framework-jwt 1.11.0
-
-django channels 2.1.7
-
-celery 4.2.1
-
-软件运行环境
-
-Python 3.6.8
-
-Redis 5.0
-
-MySql 5.6.42
-
-操作系统：
-
-CentOS 7
 
 ***系统更新方式***
 ```
@@ -159,7 +87,7 @@ CHANNEL_LAYERS = {
 }
 
 #修改redis
-vi rest_xops/celery.py
+vi lingdeng_rest_api/celery.py
 
 BROKER_URL = 'redis://localhost:6379/1' # Broker配置，使用Redis作为消息中间件
 
@@ -172,7 +100,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/1' # Backend设置，使用redis
 4、登陆MYSQL，创建数据库
 
 ```
-CREATE DATABASE rest_xops DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE lingdeng_rest_api DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
 5、执行创建表信息

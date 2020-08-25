@@ -2,9 +2,9 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rest_xops.settings') # 设置django环境
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lingdeng_rest_api.settings') # 设置django环境
 
-app = Celery('rest_xops')
+app = Celery('lingdeng_rest_api')
 
 app.config_from_object('django.conf:settings')
 

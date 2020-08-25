@@ -7,7 +7,7 @@ from common.custom import CommonPagination, RbacPermission, TreeAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
-from rest_xops.basic import XopsResponse
+from lingdeng_rest_api.basic import XopsResponse
 from rest_framework.permissions import IsAuthenticated
 
 

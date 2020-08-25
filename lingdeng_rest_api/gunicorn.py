@@ -7,4 +7,4 @@ workers = cpu_count()
 timeout = 60
 graceful_timeout = 10
 loglevel = "error"
-errorlog = "/var/log/rest_xops/xops.log"
+errorlog = "/var/log/lingdeng_rest_api/xops.log"

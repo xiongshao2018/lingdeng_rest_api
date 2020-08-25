@@ -10,8 +10,8 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from ..models import DeviceInfo
 from deployment.models import Project
-from rest_xops.basic import XopsResponse
-from rest_xops.code import *
+from lingdeng_rest_api.basic import XopsResponse
+from lingdeng_rest_api.code import *
 from django.db.models import Q
 
 

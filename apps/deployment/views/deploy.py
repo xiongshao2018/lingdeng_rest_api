@@ -2,8 +2,8 @@
 # @Author  : xufqing
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_xops.code import *
-from rest_xops.basic import XopsResponse
+from lingdeng_rest_api.code import *
+from lingdeng_rest_api.basic import XopsResponse
 from ..models import Project, DeployRecord
 from cmdb.models import DeviceInfo, ConnectionInfo
 from utils.shell_excu import Shell, connect_init
