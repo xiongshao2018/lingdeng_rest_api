@@ -1,7 +1,15 @@
+'''
+-*- coding: utf-8 -*-
+@Author  : lingdeng
+@Time    : 2020/8/25 10:34 下午
+@Software: PyCharm
+@File    : serializers.py
+@IDE    : PyCharm
+'''
+
 # @Time    : 2019/1/12 21:03
 # @Author  : xufqing
 
-from django.contrib.auth.hashers import check_password
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, viewsets, authentication
@@ -17,6 +25,7 @@ from cmdb.models import ConnectionInfo
 from common.custom import CommonPagination, RbacPermission
 from deployment.models import Project
 from lingdeng_rest_api.code import *
+from .serializers import ChangePasswdSerializer, ChangePasswdAdminSerializer, UploadAvatarSerializer
 from ..models import UserProfile
 from ..serializers.user_serializer import UserListSerializer, UserCreateSerializer, UserModifySerializer, \
     UserInfoListSerializer, UserLoginSerializer, UserBuildMenusSerializer
@@ -109,10 +118,13 @@ class UserViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         # 根据请求类型动态变更serializer
+        print(self.action)
         if self.action == 'create':
             return UserCreateSerializer
         elif self.action == 'list':
             return UserListSerializer
+        elif self.action == 'upload_avatar':
+            return UploadAvatarSerializer
         return UserModifySerializer
 
     def create(self, request, *args, **kwargs):
@@ -146,32 +158,33 @@ class UserViewSet(ModelViewSet):
         perms = UserInfoView.get_permission_from_role(request)
         user = UserProfile.objects.get(id=pk)
         if 'admin' in perms or 'user_all' in perms or request.user.is_superuser:
-            new_password1 = request.data['new_password1']
-            new_password2 = request.data['new_password2']
-            if new_password1 == new_password2:
-                user.set_password(new_password2)
-                user.save()
-                return Response('密码修改成功!')
-            else:
-                return Response('新密码两次输入不一致!', status=status.HTTP_400_BAD_REQUEST)
+            serializer = ChangePasswdAdminSerializer(request.data)
+            serializer.is_valid(raise_exception=True)
+            user.set_password(serializer.validated_data["new_password2"])
+            user.save()
+            return Response('密码修改成功!')
         else:
-            old_password = request.data['old_password']
-            if check_password(old_password, user.password):
-                new_password1 = request.data['new_password1']
-                new_password2 = request.data['new_password2']
-                if new_password1 == new_password2:
-                    user.set_password(new_password2)
-                    user.save()
-                    return Response('密码修改成功!')
-                else:
-                    return Response('新密码两次输入不一致!', status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response('旧密码错误!', status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = ChangePasswdSerializer(request.data)
+            serializer.is_valid(raise_exception=True)
+            user.set_password(serializer.validated_data["new_password2"])
+            user.save()
+            return Response('密码修改成功!')
+
+    @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated],
+            url_path='upload-avatar', url_name='upload-avatar')
+    def upload_avatar(self, request, *args, **kwargs):
+        print(request.user)
+        partial = kwargs.pop('partial', False)
+        serializer = self.get_serializer(request.user, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
 
 class UserListView(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
-    serializer_class = UserInfoListSerializer
+    serializer_class = UserListSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_fields = ('name',)
     ordering_fields = ('id',)

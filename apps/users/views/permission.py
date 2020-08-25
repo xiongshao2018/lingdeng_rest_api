@@ -1,5 +1,6 @@
 # @Time    : 2019/1/30 14:40
 # @Author  : xufqing
+from rest_framework import viewsets
 from rest_framework.viewsets import ModelViewSet
 from ..models import Permission
 from ..serializers.permission_serializer import PermissionListSerializer
@@ -8,7 +9,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 
-class PermissionViewSet(ModelViewSet, TreeAPIView):
+class PermissionViewSet(ModelViewSet, TreeAPIView, viewsets.GenericViewSet):
     '''
     权限：增删改查
     '''
@@ -24,7 +25,7 @@ class PermissionViewSet(ModelViewSet, TreeAPIView):
     permission_classes = (RbacPermission,)
 
 
-class PermissionTreeView(TreeAPIView):
+class PermissionTreeView(TreeAPIView, viewsets.GenericViewSet):
     '''
     权限树
     '''

@@ -1,3 +1,11 @@
+'''
+-*- coding: utf-8 -*-
+@Author  : lingdeng
+@Time    : 2020/8/25 10:34 下午
+@Software: PyCharm
+@File    : serializers.py
+@IDE    : PyCharm
+'''
 # @Time    : 2019/1/14 15:11
 # @Author  : xufqing
 import re
@@ -7,8 +15,8 @@ from django.contrib.auth import authenticate
 from django.db.models import Q
 from rest_framework import serializers
 
-from .menu_serializer import MenuSerializer
 from ..models import UserProfile, Menu
+from ..serializers.menu_serializer import MenuSerializer
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -94,7 +102,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if UserProfile.objects.filter(mobile=mobile):
             raise serializers.ValidationError("手机号已经被注册")
         return mobile
-
 
 
 class UserInfoListSerializer(serializers.ModelSerializer):
@@ -334,3 +341,77 @@ class UserBuildMenusSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('roles',)
+
+
+class ChangePasswdSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, min_length=6, max_length=18, write_only=True,
+                                         style={'input_type': 'password'}, label="旧密码", help_text="旧密码",
+                                         error_messages={'min_length': '密码不能小于6个字符', 'max_length': '密码不能大于18个字符',
+                                                         'required': '请填写密码'})
+    new_password1 = serializers.CharField(required=True, min_length=6, max_length=18, write_only=True,
+                                          style={'input_type': 'password'}, label="新密码", help_text="新密码",
+                                          error_messages={'min_length': '密码不能小于6个字符', 'max_length': '密码不能大于18个字符',
+                                                          'required': '请填写密码'})
+    new_password2 = serializers.CharField(required=True, min_length=6, max_length=18, style={'input_type': 'password'},
+                                          label="确认密码", help_text="确认密码",
+                                          error_messages={'min_length': '密码不能小于6个字符', 'max_length': '密码不能大于18个字符',
+                                                          'required': '请填写密码'}, write_only=True)
+
+    def validate_old_password(self, old_password):
+        """
+        验证密码是否一致
+        :param attrs:
+        :return:
+        """
+        # 验证密码
+        username = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            username = request.user
+
+        user = UserProfile.objects.get(username=username)
+        print(user.check_password(old_password))
+        if user.check_password(old_password) is False:
+            raise serializers.ValidationError("密码不正确")
+
+    def validate_new_password2(self, new_password2):
+        """
+        验证密码是否一致
+        :param attrs:
+        :return:
+        """
+        # 验证密码
+        if self.initial_data["new_password1"] != new_password2:
+            raise serializers.ValidationError("密码输入不一致")
+
+        return new_password2
+
+
+class ChangePasswdAdminSerializer(serializers.Serializer):
+    new_password1 = serializers.CharField(required=True, min_length=6, max_length=18, write_only=True,
+                                          style={'input_type': 'password'}, label="新密码", help_text="新密码",
+                                          error_messages={'min_length': '密码不能小于6个字符', 'max_length': '密码不能大于18个字符',
+                                                          'required': '请填写密码'})
+    new_password2 = serializers.CharField(required=True, min_length=6, max_length=18, style={'input_type': 'password'},
+                                          label="确认密码", help_text="确认密码",
+                                          error_messages={'min_length': '密码不能小于6个字符', 'max_length': '密码不能大于18个字符',
+                                                          'required': '请填写密码'}, write_only=True)
+
+    def validate_new_password2(self, new_password2):
+        """
+        验证密码是否一致
+        :param attrs:
+        :return:
+        """
+        # 验证密码
+        if self.initial_data["new_password1"] != new_password2:
+            raise serializers.ValidationError("密码输入不一致")
+
+        return new_password2
+
+
+class UploadAvatarSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = ["image"]

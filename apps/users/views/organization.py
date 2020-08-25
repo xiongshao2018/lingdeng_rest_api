@@ -1,5 +1,7 @@
 # @Time    : 2019/1/12 21:03
 # @Author  : xufqing
+from rest_framework import viewsets, authentication, mixins
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from ..models import Organization
 from ..serializers.organization_serializer import OrganizationSerializer, OrganizationUserTreeSerializer
@@ -27,23 +29,32 @@ class OrganizationViewSet(ModelViewSet, TreeAPIView):
     permission_classes = (RbacPermission,)
 
 
-class OrganizationTreeView(TreeAPIView):
+class OrganizationTreeView(TreeAPIView, viewsets.GenericViewSet):
     '''
     组织架构树
     '''
     queryset = Organization.objects.all()
 
 
-class OrganizationUserTreeView(APIView):
+class OrganizationUserTreeView(mixins.ListModelMixin, viewsets.GenericViewSet):
     '''
     组织架构关联用户树
     '''
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     permission_classes = (IsAuthenticated,)
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationUserTreeSerializer
 
-    def get(self, request, format=None):
-        organizations = Organization.objects.all()
-        serializer = OrganizationUserTreeSerializer(organizations, many=True)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
         tree_dict = {}
         tree_data = []
         for item in serializer.data:
@@ -61,4 +72,7 @@ class OrganizationUserTreeView(APIView):
                 parent['children'].append(tree_dict[i])
             else:
                 tree_data.append(tree_dict[i])
-        return XopsResponse(tree_data)
+        return Response(tree_data)
+        # return Response(serializer.data)
+
+

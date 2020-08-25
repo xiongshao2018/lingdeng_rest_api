@@ -1,5 +1,6 @@
 # @Time    : 2019/1/12 21:02
 # @Author  : xufqing
+from rest_framework import viewsets
 from rest_framework.viewsets import ModelViewSet
 from ..models import Menu
 from ..serializers.menu_serializer import MenuSerializer
@@ -25,7 +26,7 @@ class MenuViewSet(ModelViewSet, TreeAPIView):
 
 
 
-class MenuTreeView(TreeAPIView):
+class MenuTreeView(TreeAPIView, viewsets.GenericViewSet):
     '''
     菜单树
     '''

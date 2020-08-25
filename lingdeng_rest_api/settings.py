@@ -125,7 +125,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  #
     ),
     # 自定义异常处理
-    'EXCEPTION_HANDLER': 'apps.common.custom.xops_exception_handler'
+    'EXCEPTION_HANDLER': 'apps.common.custom.xops_exception_handler',
+    # 修改默认返回JSON的renderer的类
+    'DEFAULT_RENDERER_CLASSES': (
+        'apps.common.rendererresponse.customrenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',  # django-filter自带的查询过滤器
+    )
 }
 
 # jwt setting
