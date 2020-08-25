@@ -1,8 +1,12 @@
 # @Time    : 2019/1/12 21:03
 # @Author  : xufqing
+from rest_framework import mixins, viewsets
+from rest_framework_jwt.serializers import jwt_payload_handler, jwt_encode_handler
+
 from ..models import UserProfile, Menu
 from django.contrib.auth.hashers import check_password
-from ..serializers.user_serializer import UserListSerializer, UserCreateSerializer, UserModifySerializer, UserInfoListSerializer
+from ..serializers.user_serializer import UserListSerializer, UserCreateSerializer, UserModifySerializer, \
+    UserInfoListSerializer, UserLoginSerializer
 from ..serializers.menu_serializer import MenuSerializer
 from rest_framework.generics import ListAPIView
 from common.custom import CommonPagination, RbacPermission
@@ -14,7 +18,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth import authenticate
-from rest_framework_jwt.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
 from rest_xops.settings import SECRET_KEY
 from operator import itemgetter
@@ -22,26 +25,33 @@ from rest_xops.code import *
 from deployment.models import Project
 from cmdb.models import ConnectionInfo
 from django.db.models import Q
-import jwt
-
-jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 
-class UserAuthView(APIView):
+
+class UserAuthView(mixins.CreateModelMixin, viewsets.GenericViewSet):
     '''
     用户认证获取token
     '''
+    """登录账号"""
+    serializer_class = UserLoginSerializer
+    authentication_classes = []
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
 
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            payload = jwt_payload_handler(user)
-            return XopsResponse({'token': jwt.encode(payload, SECRET_KEY)},status=OK)
-        else:
-            return XopsResponse('用户名或密码错误!', status=BAD)
+        re_dict = {}
+        payload = jwt_payload_handler(user)
+        re_dict["username"] = user.username
+        re_dict["email"] = user.email
+        re_dict["token"] = jwt_encode_handler(payload)
+
+        headers = self.get_success_headers(serializer.data)
+        return XopsResponse(re_dict, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
 
 
 class UserInfoView(APIView):
@@ -54,6 +64,7 @@ class UserInfoView(APIView):
             if request.user:
                 perms_list = []
                 for item in request.user.roles.values('permissions__method').distinct():
+                    print(item)
                     perms_list.append(item['permissions__method'])
                 return perms_list
         except AttributeError:
@@ -62,6 +73,7 @@ class UserInfoView(APIView):
     def get(self, request):
         if request.user.id is not None:
             perms = self.get_permission_from_role(request)
+            print(perms)
             data = {
                 'id': request.user.id,
                 'username': request.user.username,

@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+import datetime
+import os
+import sys
+
 from .celery import *
-import os,sys,datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +29,6 @@ SECRET_KEY = 'x^*!*=ao%3t2ay-0zw-21!&oz=%4gwu0=&*omt@zi%3t^dyd8!'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -47,7 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',#跨域
+    'corsheaders.middleware.CorsMiddleware',  # 跨域
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware', #操作记录
+    'simple_history.middleware.HistoryRequestMiddleware',  # 操作记录
 ]
 
 # CORS跨域设置
@@ -82,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rest_xops.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -92,9 +93,9 @@ DATABASES = {
         'NAME': 'rest_xops',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'xiong123',
         'PORT': '3306',
-        'OPTIONS': { 'init_command': 'SET storage_engine=INNODB;' }
+        "OPTIONS": {"init_command": "SET default_storage_engine=INNODB;"}
     }
 }
 
@@ -117,23 +118,24 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',#
-        'rest_framework.authentication.SessionAuthentication',#
+        'rest_framework.authentication.BasicAuthentication',  #
+        'rest_framework.authentication.SessionAuthentication',  #
     ),
     # 自定义异常处理
     'EXCEPTION_HANDLER': 'apps.common.custom.xops_exception_handler'
 }
 
-#jwt setting
+# jwt setting
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=3),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 # redis 设置
 REDIS_HOST = 'localhost'
-REDIS_PORT = 16379
+REDIS_PORT = 6379
 REDIS_DB = 0
 REDIS_PASSWORD = None
 
@@ -168,9 +170,9 @@ AUTH_USER_MODEL = 'rbac.UserProfile'
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-#yml配置文件存放的目录
+# yml配置文件存放的目录
 YML_CONF_DIR = os.path.join(BASE_DIR, 'conf')
 
 # 部署管理工作区地址
@@ -178,7 +180,6 @@ WORKSPACE = '/tmp/workspace/'
 
 # 日志
 BASE_LOG_DIR = os.path.join(BASE_DIR, 'logs')
-
 
 LOGGING = {
     'version': 1,
@@ -212,21 +213,21 @@ LOGGING = {
         }
 
     },
-        'loggers': {
-            'info': {
-                'handlers': ['default'],
-                'level': 'INFO',
-                'propagate': True,
-            },
-            'warn':{
-                'handlers': ['default'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'error': {
-                'handlers': ['error'],
-                'level': 'ERROR',
-            }
+    'loggers': {
+        'info': {
+            'handlers': ['default'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'warn': {
+            'handlers': ['default'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'error': {
+            'handlers': ['error'],
+            'level': 'ERROR',
+        }
     }
 
 }

@@ -3,13 +3,13 @@ from cmdb.views import dict,scan,asset,connection,business,group,label
 from rest_framework import routers
 
 router = routers.SimpleRouter()
-router.register(r'dicts', dict.DictViewSet, base_name="dicts")
-router.register(r'scan/devices', scan.DeviceScanInfoViewSet, base_name="scan_devices")
-router.register(r'devices', asset.DeviceInfoViewSet, base_name="devices")
-router.register(r'connections', connection.ConnectionInfoViewSet, base_name="connections")
-router.register(r'businesses', business.BusinessViewSet, base_name="businesses")
-router.register(r'groups', group.DeviceGroupViewSet, base_name="groups")
-router.register(r'labels', label.LabelViewSet, base_name="labels")
+router.register(r'dicts', dict.DictViewSet, basename="dicts")
+router.register(r'scan/devices', scan.DeviceScanInfoViewSet, basename="scan_devices")
+router.register(r'devices', asset.DeviceInfoViewSet, basename="devices")
+router.register(r'connections', connection.ConnectionInfoViewSet, basename="connections")
+router.register(r'businesses', business.BusinessViewSet, basename="businesses")
+router.register(r'groups', group.DeviceGroupViewSet, basename="groups")
+router.register(r'labels', label.LabelViewSet, basename="labels")
 
 urlpatterns = [
     path(r'api/', include(router.urls)),

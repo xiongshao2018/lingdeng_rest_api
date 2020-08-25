@@ -1,5 +1,4 @@
 
-from django.utils import six
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
@@ -30,6 +29,6 @@ class XopsResponse(Response):
         self.content_type = content_type
 
         if headers:
-            for name, value in six.iteritems(headers):
+            for name, value in headers.items():
                 self[name] = value
 

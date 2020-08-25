@@ -5,8 +5,8 @@ from deployment.views import project, deploy, applog
 from rest_framework import routers
 
 router = routers.SimpleRouter()
-router.register(r'projects', project.ProjectViewSet, base_name="projects")
-router.register(r'deploy/records', deploy.DeployRecordViewSet, base_name="deploy_record")
+router.register(r'projects', project.ProjectViewSet, basename="projects")
+router.register(r'deploy/records', deploy.DeployRecordViewSet, basename="deploy_record")
 urlpatterns = [
     path(r'api/', include(router.urls)),
     path(r'api/deploy/excu/', deploy.DeployView.as_view(), name='deploy'),

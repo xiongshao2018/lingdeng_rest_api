@@ -7,5 +7,6 @@ urlpatterns = [
     path(r'', include('rbac.urls')),
     path(r'', include('cmdb.urls')),
     path(r'', include('deployment.urls')),
+    path(r'api-auth/', include('rest_framework.urls')),
     path('docs/', include_docs_urls()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
