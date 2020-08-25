@@ -15,8 +15,8 @@ from django.contrib.auth import authenticate
 from django.db.models import Q
 from rest_framework import serializers
 
-from ..models import UserProfile, Menu
-from ..serializers.menu_serializer import MenuSerializer
+from users.menus.serializers import MenuSerializer
+from users.models import UserProfile, Menu
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -122,7 +122,7 @@ class UserInfoListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'name', 'mobile', 'image', 'email', 'roles')
+        fields = ('id', 'username', 'image', 'email', 'is_active', 'date_joined', 'roles')
 
 
 class UserBuildMenusSerializer(serializers.ModelSerializer):
@@ -411,7 +411,6 @@ class ChangePasswdAdminSerializer(serializers.Serializer):
 
 
 class UploadAvatarSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UserProfile
         fields = ["image"]

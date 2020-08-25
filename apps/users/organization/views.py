@@ -1,31 +1,36 @@
-# @Time    : 2019/1/12 21:03
-# @Author  : xufqing
+'''
+-*- coding: utf-8 -*-
+@Author  : lingdeng
+@Time    : 2020/8/25 10:34 下午
+@Software: PyCharm
+@File    : serializers.py
+@IDE    : PyCharm
+'''
 from rest_framework import viewsets, authentication, mixins
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from ..models import Organization
-from ..serializers.organization_serializer import OrganizationSerializer, OrganizationUserTreeSerializer
-from common.custom import CommonPagination, RbacPermission, TreeAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework.views import APIView
-from lingdeng_rest_api.basic import XopsResponse
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
+from common.custom import CommonPagination, RbacPermission, TreeAPIView
+from users.models import Organization
+from users.organization.serializers import OrganizationSerializer, OrganizationUserTreeSerializer
 
 
-class OrganizationViewSet(ModelViewSet, TreeAPIView):
+class OrganizationViewSet(viewsets.ModelViewSet, TreeAPIView):
     '''
     组织机构：增删改查
     '''
-    perms_map = ({'*': 'admin'}, {'*': 'organization_all'}, {'get': 'organization_list'}, {'post': 'organization_create'},
-    {'put': 'organization_edit'},{'delete': 'organization_delete'})
+    perms_map = (
+        {'*': 'admin'}, {'*': 'organization_all'}, {'get': 'organization_list'}, {'post': 'organization_create'},
+        {'put': 'organization_edit'}, {'delete': 'organization_delete'})
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     pagination_class = CommonPagination
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('name')
     ordering_fields = ('id',)
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     permission_classes = (RbacPermission,)
 
 
@@ -74,5 +79,3 @@ class OrganizationUserTreeView(mixins.ListModelMixin, viewsets.GenericViewSet):
                 tree_data.append(tree_dict[i])
         return Response(tree_data)
         # return Response(serializer.data)
-
-

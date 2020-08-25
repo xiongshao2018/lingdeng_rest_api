@@ -25,10 +25,10 @@ from cmdb.models import ConnectionInfo
 from common.custom import CommonPagination, RbacPermission
 from deployment.models import Project
 from lingdeng_rest_api.code import *
-from .serializers import ChangePasswdSerializer, ChangePasswdAdminSerializer, UploadAvatarSerializer
-from ..models import UserProfile
-from ..serializers.user_serializer import UserListSerializer, UserCreateSerializer, UserModifySerializer, \
-    UserInfoListSerializer, UserLoginSerializer, UserBuildMenusSerializer
+from users.models import UserProfile
+from users.users.serializers import UserListSerializer, UserCreateSerializer, UserModifySerializer, \
+    UserInfoListSerializer, UserLoginSerializer, UserBuildMenusSerializer, ChangePasswdSerializer, \
+    ChangePasswdAdminSerializer, UploadAvatarSerializer
 
 
 class UserAuthView(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -62,7 +62,6 @@ class UserInfoView(mixins.ListModelMixin, viewsets.GenericViewSet):
     '''
     获取当前用户信息和权限
     '''
-    queryset = UserProfile.objects.all()
     serializer_class = UserInfoListSerializer
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -78,6 +77,14 @@ class UserInfoView(mixins.ListModelMixin, viewsets.GenericViewSet):
                 return perms_list
         except AttributeError:
             return None
+
+    def list(self, request, *args, **kwargs):
+        queryset = UserProfile.objects.get(id=request.user.id)
+        serializer = self.get_serializer(queryset)
+        return Response(serializer.data)
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserBuildMenusView(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -97,7 +104,14 @@ class UserBuildMenusView(mixins.ListModelMixin, viewsets.GenericViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
+        # print(serializer.validated_data["roles"])
+        items = []
+        for item in serializer.data:
+            if item["roles"]:
+                for i in item["roles"]:
+                    items.append(i)
+        print(items)
+        return Response(items)
 
 
 class UserViewSet(ModelViewSet):
@@ -174,7 +188,7 @@ class UserViewSet(ModelViewSet):
     @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated],
             url_path='upload-avatar', url_name='upload-avatar')
     def upload_avatar(self, request, *args, **kwargs):
-        print(request.user)
+        """上传头像"""
         partial = kwargs.pop('partial', False)
         serializer = self.get_serializer(request.user, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)

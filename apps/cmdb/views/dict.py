@@ -1,6 +1,6 @@
 # @Time    : 2019/2/12 16:12
 # @Author  : xufqing
-
+from rest_framework import authentication
 from rest_framework.viewsets import ModelViewSet
 from ..models import Dict
 from rest_framework.response import Response
@@ -21,7 +21,7 @@ class DictViewSet(ModelViewSet):
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('key', 'value')
     ordering_fields = ('id',)
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     permission_classes = (RbacPermission,)
 
     def list(self, request, *args, **kwargs):
